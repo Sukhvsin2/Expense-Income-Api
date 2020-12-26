@@ -1,5 +1,5 @@
 from django.core.mail import EmailMessage, send_mail
-import smtplib
+import smtplib, ssl
 import os
 
 class Util:
@@ -13,10 +13,18 @@ class Util:
         #     str(os.getenv('EMAIL_HOST_USER')),
         #     [data['email_to']],
         # )
-        server = smtplib.SMTP('smtp.gmail.com', 25)
-        server.connect("smtp.gmail.com", 587)
-        server.ehlo()
-        server.login(os.getenv('EMAIL_HOST_USER'), os.getenv('EMAIL_HOST_PASSWORD'))
-        text = data['email_body']
-        server.sendmail(os.getenv('EMAIL_HOST_USER'), data['email_to'], text)
-        server.quit()
+
+        port = 587  # For starttls
+        smtp_server = "smtp.gmail.com"
+        sender_email = "djangotestingemail07@gmail.com"
+        receiver_email = data['email_to']
+        password = '9582844619'
+        message = "Subject: Hi there\n" + data['email_body']
+
+        context = ssl.create_default_context()
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.ehlo()  # Can be omitted
+            server.starttls(context=context)
+            server.ehlo()  # Can be omitted
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message)
