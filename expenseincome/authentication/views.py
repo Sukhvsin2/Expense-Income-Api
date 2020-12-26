@@ -8,6 +8,8 @@ from .models import User
 from .utils import Util
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
+import jwt
+import os
 
 class RegisterView(GenericAPIView):
 
@@ -40,5 +42,19 @@ class RegisterView(GenericAPIView):
         return Response(data=user_data, status=status.HTTP_201_CREATED)
 
 class VerifyEmail(GenericAPIView):
-    def get(self):
-        pass
+    def get(self, request):
+        token = request.GET.get('token')
+        key = os.getenv('KEY')
+        try:
+            payload = jwt.decode(token, key)
+            user = User.objects.get(id=payload['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+            return Response({'message': 'Account Verified'}, status=status.HTTP_202_ACCEPTED)
+            
+        except jwt.ExpiredSignature as identifier:
+            return Response({'error': 'Link is expired'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        except jwt.exceptions.DecodeError as identifier:
+            return Response({'error': 'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
