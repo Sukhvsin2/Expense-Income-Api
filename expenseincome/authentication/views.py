@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from rest_framework.generics import GenericAPIView
-from .serializers import RegisterationSerializer
+from rest_framework.generics import GenericAPIView, views
+from .serializers import RegisterationSerializer, EmailVerificationSerializer, LoginSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -10,6 +10,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 import jwt
 import os
+from dotenv import load_dotenv
+from django.conf import settings
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 class RegisterView(GenericAPIView):
 
@@ -41,20 +45,36 @@ class RegisterView(GenericAPIView):
 
         return Response(data=user_data, status=status.HTTP_201_CREATED)
 
-class VerifyEmail(GenericAPIView):
+class VerifyEmail(views.APIView):
+    serializer_class = EmailVerificationSerializer
+
+    token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    
+    @swagger_auto_schema(manual_parameters=[token_param_config])
     def get(self, request):
         token = request.GET.get('token')
-        key = os.getenv('KEY')
+        print('token ', token)
+        key = str(os.getenv('SECRET_KEY'))
         try:
-            payload = jwt.decode(token, key)
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            print('payload check ',payload)
             user = User.objects.get(id=payload['user_id'])
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
             return Response({'message': 'Account Verified'}, status=status.HTTP_202_ACCEPTED)
             
-        except jwt.ExpiredSignature as identifier:
+        except jwt.ExpiredSignatureError as identifier:
             return Response({'error': 'Link is expired'}, status=status.HTTP_400_BAD_REQUEST)
             
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
+
+class LoginView(GenericAPIView):
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        user = request.data
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -14,17 +14,20 @@ class Util:
         #     [data['email_to']],
         # )
 
-        port = 587  # For starttls
-        smtp_server = "smtp.gmail.com"
-        sender_email = "djangotestingemail07@gmail.com"
-        receiver_email = data['email_to']
-        password = '9582844619'
-        message = "Subject: Hi there\n" + data['email_body']
+        try:
+            port = 587  # For starttls
+            smtp_server = "smtp.gmail.com"
+            sender_email = "djangotestingemail07@gmail.com"
+            receiver_email = data['email_to']
+            password = '9582844619'
+            message = "Subject: Hi there\n" + data['email_body']
 
-        context = ssl.create_default_context()
-        with smtplib.SMTP(smtp_server, port) as server:
-            server.ehlo()  # Can be omitted
-            server.starttls(context=context)
-            server.ehlo()  # Can be omitted
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email, message)
+            context = ssl.create_default_context()
+            with smtplib.SMTP(smtp_server, port) as server:
+                server.ehlo()  # Can be omitted
+                server.starttls(context=context)
+                server.ehlo()  # Can be omitted
+                server.login(sender_email, password)
+                server.sendmail(sender_email, receiver_email, message)
+        except:
+            print('failed')
