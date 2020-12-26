@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from .serializers import *
 from .models import Expenses
@@ -16,7 +15,7 @@ class ExpensesListAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
-    
+
 class ExpensesDetailAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsOwner,)
 
