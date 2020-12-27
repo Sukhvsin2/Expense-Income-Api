@@ -29,5 +29,5 @@ class Util:
                 server.ehlo()  # Can be omitted
                 server.login(sender_email, password)
                 server.sendmail(sender_email, receiver_email, message)
-        except:
+        except: 
             print('failed')
