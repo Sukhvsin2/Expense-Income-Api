@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 import datetime
 from expenses.models import Expenses
+from income.models import Income
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import ExpenseStatsSerializer
@@ -36,4 +37,11 @@ class ExpenseSummaryStats(APIView):
             for category in categories:
                 final[category] = self.get_amount_for_category(expenses, category)
                 
+        return Response({'category_data': final}, status=status.HTTP_200_OK)
+
+class IncomeSummaryStats(APIView):
+    permission_classes = (IsAuthenticated, IsOwner,)
+    
+    def get(self, request):
+        final = {}
         return Response({'category_data': final}, status=status.HTTP_200_OK)
