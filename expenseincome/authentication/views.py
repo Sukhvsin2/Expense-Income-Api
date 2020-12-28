@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.generics import GenericAPIView, views
-from .serializers import RegisterationSerializer, EmailVerificationSerializer, LoginSerializer, RequestPasswordResetEmailSerializer, SetNewPasswordSerializer
+from .serializers import RegisterationSerializer, EmailVerificationSerializer, LoginSerializer, RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, PasswordCheckTokenSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -21,10 +21,12 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.sites.shortcuts import get_current_site
 from .utils import send_mail
 # password reset end
+from .renderers import UserRenderer
 
 class RegisterView(GenericAPIView):
 
     serializer_class = RegisterationSerializer
+    renderer_classes = (UserRenderer, )
 
     def post(self, request):
         user = request.data
@@ -115,6 +117,7 @@ class RequestPasswordResetEmail(GenericAPIView):
 
         
 class PasswordTokenCheckAPI(GenericAPIView):
+    serializer_class = PasswordCheckTokenSerializer
 
     def get(self, request, uidb64, token):
         try:

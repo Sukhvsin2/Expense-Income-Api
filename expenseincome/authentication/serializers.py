@@ -103,3 +103,12 @@ class SetNewPasswordSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('The reset link is invalid', 401)
 
         return super.validate(attrs)
+
+
+class PasswordCheckTokenSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(max_length=555, write_only=True)
+    uidb64 = serializers.CharField(max_length=64, write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['uidb64', 'token']
