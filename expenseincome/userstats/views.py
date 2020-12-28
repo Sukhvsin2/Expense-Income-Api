@@ -37,18 +37,34 @@ class ExpenseSummaryStats(APIView):
             for category in categories:
                 final[category] = self.get_amount_for_category(expenses, category)
                 
-        return Response({'category_data': final}, status=status.HTTP_200_OK)
+        return Response({'expense_category_data': final}, status=status.HTTP_200_OK)
 
 class IncomeSummaryStats(APIView):
     # permission_classes = (IsAuthenticated, IsOwner,)
     
     def get_category(self, income):
-        return income.category
+        return income.source
+    
+    def get_amount_for_source(self, income_list, source):
+        incomes = income_list.filter(source=source)
+        amount = 0
+        
+        for income in incomes:
+            amount += income.amount
+        
+        return {'amount': str(amount)}
 
     def get(self, request):
-
+        today_date = datetime.date.today()
+        ayear_ago = today_date - datetime.timedelta(days=30 * 12)
+        incomes = Income.objects.filter(user=request.user, date__gte=ayear_ago, date__lte=today_date)
+        
         final = {}
-        category = self.get_category
-        import pdb
-        pdb.set_trace()
-        return Response({'category_data': final}, status=status.HTTP_200_OK)
+        sources = list(map(self.get_category, incomes))
+
+        for income in incomes:
+            for source in sources:
+                final[source] = self.get_amount_for_source(incomes, source)
+        # import pdb
+        # pdb.set_trace()
+        return Response({'income_category_data': final}, status=status.HTTP_200_OK)
