@@ -22,6 +22,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from .utils import send_mail
 # password reset end
 from .renderers import UserRenderer
+from django.contrib.auth.models import update_last_login
 
 class RegisterView(GenericAPIView):
 
@@ -86,6 +87,7 @@ class LoginView(GenericAPIView):
         user = request.data
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
+        update_last_login(None, user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class RequestPasswordResetEmail(GenericAPIView):
