@@ -40,7 +40,7 @@ class ExpenseSummaryStats(APIView):
         return Response({'expense_category_data': final}, status=status.HTTP_200_OK)
 
 class IncomeSummaryStats(APIView):
-    # permission_classes = (IsAuthenticated, IsOwner,)
+    permission_classes = (IsAuthenticated, IsOwner,)
     
     def get_category(self, income):
         return income.source
@@ -65,6 +65,4 @@ class IncomeSummaryStats(APIView):
         for income in incomes:
             for source in sources:
                 final[source] = self.get_amount_for_source(incomes, source)
-        # import pdb
-        # pdb.set_trace()
         return Response({'income_category_data': final}, status=status.HTTP_200_OK)
