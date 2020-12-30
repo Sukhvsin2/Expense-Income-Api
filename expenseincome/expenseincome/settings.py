@@ -2,6 +2,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 from datetime import timedelta
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -155,3 +156,4 @@ EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_HOST_PASSWORD'))
 EMAIL_USE_SSL = True
 # DEFAULT_FROM_EMAIL  = str(os.getenv('EMAIL_HOST_USER'))
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+django_heroku.settings(locals())
