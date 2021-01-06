@@ -90,8 +90,7 @@ python-dotenv==0.15.0
 python-jwt==3.2.4
 python-utilities==1.0.14
 pyttsx==1.1
-pytube==9.4.0
-pytubetemp==9.4.1
+pytube==10.4.1
 pytz==2020.5
 PyWavelets==1.0.3
 pywin32-ctypes==0.2.0
