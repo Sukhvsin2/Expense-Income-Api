@@ -87,7 +87,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'expenseincome.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
